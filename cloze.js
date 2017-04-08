@@ -41,6 +41,13 @@ partial method:
 */
 
 function ClozeCard( text , cloze) {
+    // make it scope-safe
+    // if this constructor was called without 'new', the resulting instanceof will not be the constructor itself, so loop back around wwith 'new'
+    if (!(this instanceof ClozeCard)) { 
+        return new ClozeCard( text, cloze);
+    }
+    
+    // now, as you were ...
     this.text = text;
     this.cloze = cloze;
     this.getCloze = function(){
@@ -60,8 +67,9 @@ function ClozeCard( text , cloze) {
             // false: return the error message
             console.log( 'Error: "' + this.cloze +'" does not exist in "'+ this.text +'".')
         }
-}
+} // ClozeCard constructor
 
-var testCloze = new ClozeCard("My name is Kelly Davis.","name");testCloze.getText();
+ // testing without 'new' keyword
+var testCloze = ClozeCard("My name is Kelly Davis.","name");testCloze.getText();
 testCloze.getCloze();
 testCloze.getPartial();
