@@ -1,17 +1,3 @@
-/*
---------------------------
-pseudo code
---------------------------
-constructor ClozeCard takes text, cloze string
- builds object with keys text, cloze and a method 'partial' that returns error if cloze can't be found in string, or the string with cloze replaced by '...'
- 
-partial method:
-    checks string with regex .test method and 
-        returns error that says "<cloze> does not exist in <text>"
-        or
-        returns partial string by using replace(<cloze>, "...") to replace any instance of cloze
-
-*/
 // pulls in questions.js file that contains an array of questions formatted as: [{text: <text1>,cloze:<cloze1>}, ...]
 var questions = require('./questions.js');
 function ClozeCard( text , cloze) {
@@ -24,29 +10,45 @@ function ClozeCard( text , cloze) {
     // now, as you were ...
     this.text = text;
     this.cloze = cloze;
-    this.getBack = function(){
-        console.log('Back: '+cloze)
-    };
-    this.getText = function(){
-        console.log('Full text: '+text);
-    }
-    this.getFront = function(){
-        // build regular expression /<this.cloze>/gi, which looks for all instances of the cloze string (g modifier) in any case (i modifier) 
-        var clozePattern = RegExp(this.cloze, "gi");
-        // does cloze  exist in full string?
-        if (clozePattern.test(this.text))
-            // true: return text with all instances of the matching pattern replaced with "..."
-            console.log( this.text.replace(clozePattern,"..."))
-        else 
-            // false: return the error message
-            console.log( 'Error: "' + this.cloze +'" does not exist in "'+ this.text +'".')
-        }
-} // ClozeCard constructor
+} // end ClozeCard constructor
 
+// let's add some methods to the ClozeCard constructor's prototype:
+var clozeProto = ClozeCard.prototype;
+
+   // method getBack consoles out the cloze string (ie, the 'answer' on the back of the card) 
+clozeProto.getBack = function(){
+        console.log('Back:\n'+this.cloze)
+    };
+
+
+   // method getText consoles out the full text of the card's question
+clozeProto.getText = function(){
+        console.log('[ Full text: '+this.text+' ]');
+    }
+
+// method getFront consoles out the clozed text (ie, the "question" on the front of the card)
+clozeProto.getFront = function(){
+    // build regular expression /<this.cloze>/gi, which looks for all instances (g modifer = global) of the cloze string of any case (i modifier = case Insensitive) 
+    var clozePattern = RegExp(this.cloze, "gi");
+    // does this card's cloze exist in full string? .test() returns  true if clozePattern is match on the string this.text
+    if (clozePattern.test(this.text))
+        // true: return text with all instances of the matching pattern replaced with "..."
+        console.log( this.text.replace(clozePattern,"..."))
+    else 
+        // false: return the error message
+        console.log( 'Error: "' + this.cloze +'" does not exist in "'+ this.text +'".')
+    }
+
+// loop through imported questions.data array to console out card front, back and full text data
 for (var i=0;i<questions.data.length;i++) {
+    // construct flashcard object using ClozeCard constructor and question.data data
     var thisCloze = ClozeCard(questions.data[i].text, questions.data[i].cloze);
-    console.log('Card front:');
+    // console log the clozed text
+    console.log('\n_____________________ Question '+(i+1)+' _______________________\n')
+    console.log('Front:');
     thisCloze.getFront();
     thisCloze.getBack();
     thisCloze.getText();
+    console.log('\n                       ****')
+
 }
